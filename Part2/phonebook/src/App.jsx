@@ -25,10 +25,10 @@ const App = () => {
     setPersonFilter(event.target.value);
   }
 
-  const removePerson = id => {
-    const personToRemove = persons.find(p => p.id === id)
+  const removePerson = personToRemove => {
     if (window.confirm(`delete ${personToRemove.name}?`)) {
-      PersonService.delPerson(personToRemove)
+      PersonService.remove(personToRemove.id);
+      setPersons(persons.filter(person => person !== personToRemove));
     }
   }
   
@@ -47,12 +47,21 @@ const App = () => {
     } else if (newNumber === '') {
       alert('Field "number" can\'t be empty')
     } else {
-      if(!persons.every(person => person.name !== newName)) {
-        alert(`${newName} is already registered`);
-        setNewName('');
-        setNewNumber('');
+      if(!persons.every(person => person.name !== newName) && persons.every(person => person.number !== newNumber)) {
+        if (window.confirm(`${newName} is already registered, replace existing number?`)) {
+          const PersonObject = {
+            name: newName,
+            number: newNumber,
+          }
+          PersonService.update(persons.find(person => person.name === newName).id, PersonObject)
+                       .then(returnedPerson => {
+                          setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
+                          setNewName('');
+                          setNewNumber('');
+                        })
+        }
       } else if (!persons.every(person => (person.number !== newNumber))) {
-        alert(`phone number ${newNumber} is already registered`);
+        alert(`phone number ${newNumber} is already registered to ${persons.find(person => person.number === newNumber).name}`);
         setNewName('');
         setNewNumber('');
       } else {
@@ -61,11 +70,11 @@ const App = () => {
           number: newNumber,
         }
         PersonService.create(PersonObject)
-                   .then(returnedPerson => {
-                      setPersons(persons.concat(returnedPerson))
-                      setNewName('');
-                      setNewNumber('');
-                    })
+                     .then(returnedPerson => {
+                        setPersons(persons.concat(returnedPerson))
+                        setNewName('');
+                        setNewNumber('');
+                      })
       }
     }
   }
@@ -81,7 +90,7 @@ const App = () => {
       <h2>Numbers</h2>
       <PersonFilter personFilter={personFilter} handleFilterChange={handleFilterChange}/>
       <ul>
-        <DisplayPerson persons={persons} personFilter={personFilter}/>
+        <DisplayPerson persons={persons} personFilter={personFilter} removePerson={removePerson}/>
       </ul>
     </div>
   )
