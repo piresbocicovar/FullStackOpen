@@ -3,12 +3,14 @@ import PersonForm from './components/PersonForm'
 import PersonFilter from './components/PersonFilter'
 import DisplayPerson from './components/DisplayPerson'
 import PersonService from './services/persons.js'
+import Notification from './components/Notification.jsx'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [personFilter, setPersonFilter] = useState('');
+  const [message, setMessage] = useState({text: '', type: ''});
   
   const handleNameChange = (event) => {
     console.log(event.target.value);
@@ -27,8 +29,25 @@ const App = () => {
 
   const removePerson = personToRemove => {
     if (window.confirm(`delete ${personToRemove.name}?`)) {
-      PersonService.remove(personToRemove.id);
-      setPersons(persons.filter(person => person !== personToRemove));
+      PersonService.remove(personToRemove.id)
+                   .then(returnedPerson => {
+                      setPersons(persons.filter(person => person !== personToRemove));
+                      setMessage({text:`'${returnedPerson.name}' was removed from the phonebook`, type: 'success'});
+                      setTimeout(() => {
+                        setMessage({text:'', type:''})
+                      }, 3000);
+                    })
+                    .catch(error => {
+                      setMessage({
+                        text: `'${personToRemove.name}' was already removed from the server`,
+                        type: 'error'
+                      }
+                      );
+                      setTimeout(() => {
+                        setMessage({text:'', type:''})
+                      }, 3000);
+                        setPersons(persons.filter(person => person.id !== personToRemove.id));
+                    });
     }
   }
   
@@ -58,7 +77,22 @@ const App = () => {
                           setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
                           setNewName('');
                           setNewNumber('');
+                          setMessage({text: `${returnedPerson}'s number was changed to ${returnedPerson.number}`, type:'success'});
+                          setTimeout(() => {
+                            setMessage({text:'', type:''})
+                          }, 3000);
                         })
+                       .catch(error => {
+                          setMessage({
+                            text: `'${newName}' was already removed from the server`,
+                            type: 'error'
+                          }
+                          );
+                          setTimeout(() => {
+                            setMessage({text:'', type:''})
+                          }, 3000);
+                            setPersons(persons.filter(person => person.name !== newName));
+                        });
         }
       } else if (!persons.every(person => (person.number !== newNumber))) {
         alert(`phone number ${newNumber} is already registered to ${persons.find(person => person.number === newNumber).name}`);
@@ -71,7 +105,11 @@ const App = () => {
         }
         PersonService.create(PersonObject)
                      .then(returnedPerson => {
-                        setPersons(persons.concat(returnedPerson))
+                        setPersons(persons.concat(returnedPerson));
+                        setMessage({text:`'${returnedPerson.name}' was added to the phonebook`, type: 'success'});
+                        setTimeout(() => {
+                          setMessage({text:'', type:''})
+                        }, 3000);
                         setNewName('');
                         setNewNumber('');
                       })
@@ -81,6 +119,7 @@ const App = () => {
 
   return (
     <div>
+      <Notification text={message.text} type={message.type}/>
       <h2>Phonebook</h2>
       <PersonForm addPerson={addPerson} 
                   newName={newName} 
