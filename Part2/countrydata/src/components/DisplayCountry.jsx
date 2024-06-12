@@ -1,5 +1,5 @@
-const DisplayCountry = ( {countries, countryFilter} ) => {
-    const filteredCountries = countries.filter(country => country.name.common.toLowerCase().startsWith(countryFilter.toLowerCase()))
+const DisplayCountry = ( {countries, countryFilter, showCountry, selectedCountry} ) => {
+    const filteredCountries = selectedCountry ? selectedCountry : countries.filter(country => country.name.common.toLowerCase().startsWith(countryFilter.toLowerCase()))
     if (countryFilter === "" ) {
         return
     } else if (filteredCountries.length > 10) {
@@ -13,7 +13,7 @@ const DisplayCountry = ( {countries, countryFilter} ) => {
     } else if (filteredCountries.length > 1){
         return(
             <p>
-                {filteredCountries.map(filteredCountry => <li key={filtered3Country.name.official}>{filteredCountry.name.common}</li>)}
+                {filteredCountries.map(filteredCountry => <li key={filteredCountry.name.official}>{filteredCountry.name.common} <button onClick={() => showCountry(filteredCountry)}>Show</button></li>)}
             </p>
         )
     } else {
