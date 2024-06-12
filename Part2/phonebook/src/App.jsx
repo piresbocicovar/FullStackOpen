@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import PersonForm from './components/PersonForm'
 import PersonFilter from './components/PersonFilter'
 import DisplayPerson from './components/DisplayPerson'
-import PersonService from './services/persons.js'
-import Notification from './components/Notification.jsx'
+import PersonService from './services/persons'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
