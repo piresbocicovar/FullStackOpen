@@ -1,25 +1,24 @@
 const DisplayCountry = ( {countries, countryFilter} ) => {
+    const filteredCountries = countries.filter(country => country.name.common.toLowerCase().startsWith(countryFilter.toLowerCase()))
     if (countryFilter === "" ) {
         return
-    } else if ((countries.filter(country => country.name.common.toLowerCase().startsWith(countryFilter.toLowerCase())).length) > 10) {
+    } else if (filteredCountries.length > 10) {
         return(
             <p>Too many matches, specify another filter</p>
         )
-    } else if ((countries.filter(country => country.name.common.toLowerCase().startsWith(countryFilter.toLowerCase())).length) == 0) {
+    } else if (filteredCountries.length == 0) {
         return(
             <p>No results</p>
         )
-    } else if ((countries.filter(country => country.name.common.toLowerCase().startsWith(countryFilter.toLowerCase())).length) > 1){
+    } else if (filteredCountries.length > 1){
         return(
             <p>
-                {countries.filter(country => country.name.common.toLowerCase().startsWith(countryFilter.toLowerCase()))
-                          .map(filteredCountry => <li key={filteredCountry.name.official}>{filteredCountry.name.common}</li>)}
+                {filteredCountries.map(filteredCountry => <li key={filtered3Country.name.official}>{filteredCountry.name.common}</li>)}
             </p>
         )
     } else {
         return(
-            countries.filter(country => country.name.common.toLowerCase().startsWith(countryFilter.toLowerCase()))
-                     .map(filteredCountry => 
+            filteredCountries.map(filteredCountry => 
                         <li key={filteredCountry.name.official}>
                             <h1>{filteredCountry.name.common}</h1>
                             <img src={filteredCountry.flags.png} alt={filteredCountry.flags.alt}/>

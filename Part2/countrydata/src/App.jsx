@@ -20,7 +20,7 @@ function App() {
 
   return (
     <>
-      find countries<input value={countryFilter} onChange={handleCountryFilterChange}/>
+      find countries <input value={countryFilter} onChange={handleCountryFilterChange}/>
       <br/>
       <DisplayCountry countryFilter={countryFilter} countries={countries}/>
     </>
