@@ -1,41 +1,60 @@
 import { useState, useEffect } from 'react'
 import CountryService from './services/Countries'
+import WeatherService from './services/Weather'
 import DisplayCountry from './components/DisplayCountry'
+import DisplayWeather from './components/DisplayWeather'
 
 function App() {
-  const [countries, setCountries] = useState([])
-  const [countryFilter, setCountryFilter] = useState("")
-  const [selectedCountry, setSelectedCountry] = useState([])
+  const [countries, setCountries] = useState([]);
+  const [countryFilter, setCountryFilter] = useState("");
+  const [filteredCountries, setFilteredCountries] = useState([]);
+  const [weather, setWeather] = useState();
 
   const handleCountryFilterChange = (event) => {
-    console.log(event.target.value);
     setCountryFilter(event.target.value);
-    setSelectedCountry("");
-  }
+    const updatedFilteredCountries = countries.filter(country => 
+      country.name.common.toLowerCase().startsWith(event.target.value.toLowerCase()));
+    setFilteredCountries(updatedFilteredCountries);
+    getWeather(updatedFilteredCountries);
+    }
+  
   
   const showCountry = (filteredCountry) => {
-    console.log(`showing ${filteredCountry.name.common}`);
-    setCountryFilter(`${filteredCountry.name.common}`);
-    console.log(filteredCountry);
-    setSelectedCountry([filteredCountry]);
+    setCountryFilter(filteredCountry.name.common);
+    setFilteredCountries([filteredCountry]);
+    getWeather([filteredCountry]);
+  }
+
+  const getWeather = (filteredCountries) => {
+    if (filteredCountries.length === 1){
+      if(!weather) {
+        WeatherService.getGeocoding(filteredCountries[0].capital)
+          .then(returnedGeocoding =>
+            WeatherService.getWeather(returnedGeocoding[0].lat, returnedGeocoding[0].lon)
+              .then(returnedWeather =>
+                setWeather(returnedWeather)
+              )
+          )
+      }
+    } else {
+      setWeather();
+    }
   }
 
   useEffect(() => {
     CountryService.getAll()
         .then(returnedCountries => {
-          console.log(returnedCountries)
           setCountries(returnedCountries);
         })
-      }, [])
+  }, [])
 
   return (
     <>
       find countries <input value={countryFilter} onChange={handleCountryFilterChange}/>
-      <br/>
       <DisplayCountry countryFilter={countryFilter}
-                      countries={countries} 
-                      showCountry={showCountry} 
-                      selectedCountry={selectedCountry}/>
+                      filteredCountries={filteredCountries}
+                      showCountry={showCountry}/>
+      <DisplayWeather weather={weather}/>
     </>
   )
 }
