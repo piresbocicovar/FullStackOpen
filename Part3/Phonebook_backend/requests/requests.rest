@@ -1,0 +1,26 @@
+###get all
+GET http://localhost:3001/api/persons/
+
+###info page
+GET http://localhost:3001/info
+
+###delete person
+DELETE http://localhost:3001/api/persons/1
+
+###add NEW person
+POST http://localhost:3001/api/persons/
+Content-Type: application/json
+
+{
+    "name": "Dirty Dan", 
+    "number": "99999999999"
+}
+
+###add REPEATED person
+POST http://localhost:3001/api/persons/
+Content-Type: application/json
+
+{
+    "name": "Ada Lovelace", 
+    "number": "39-44-5323523"
+}
