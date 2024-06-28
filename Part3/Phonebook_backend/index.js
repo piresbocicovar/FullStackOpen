@@ -1,5 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
+
 const app = express()
 const PORT = 3001
 
@@ -34,6 +36,7 @@ morgan.token("data", (request, response) => {
 
 app.use(express.json())
 app.use(morgan(':method :url :status :response-time ms - :res[content-length] :data'))
+app.use(cors())
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
