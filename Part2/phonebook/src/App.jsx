@@ -73,7 +73,7 @@ const App = () => {
                           setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
                           setNewName('');
                           setNewNumber('');
-                          setMessage({text: `${returnedPerson}'s number was changed to ${returnedPerson.number}`, type:'success'});
+                          setMessage({text: `${returnedPerson.name}'s number was changed to ${returnedPerson.number}`, type:'success'});
                           setTimeout(() => {
                             setMessage({text:'', type:''})
                           }, 3000);
