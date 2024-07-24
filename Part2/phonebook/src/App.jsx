@@ -29,7 +29,7 @@ const App = () => {
       PersonService.remove(personToRemove.id)
                    .then(returnedPerson => {
                       setPersons(persons.filter(person => person !== personToRemove));
-                      setMessage({text:`'${returnedPerson.name}' was removed from the phonebook`, type: 'success'});
+                      setMessage({text:`'${personToRemove.name}' was removed from the phonebook`, type: 'success'});
                       setTimeout(() => {
                         setMessage({text:'', type:''})
                       }, 3000);
@@ -109,6 +109,17 @@ const App = () => {
                         setNewName('');
                         setNewNumber('');
                       })
+                      .catch(error => {
+                        setMessage({
+                          text: `${error.response.data.error}`,
+                          type: 'error'
+                        }
+                        );
+                        setTimeout(() => {
+                          setMessage({text:'', type:''})
+                        }, 3000);
+                          setPersons(persons.filter(person => person.name !== newName));
+                      });
       }
     }
   }

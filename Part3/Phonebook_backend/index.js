@@ -7,11 +7,14 @@ const Person = require('./models/person')
 const app = express()
 
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
+  console.error(error)
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   } 
+  if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
 }
@@ -25,7 +28,6 @@ app.use(express.json())
 app.use(morgan(':method :url :status :response-time ms - :res[content-length] :data'))
 app.use(cors())
 app.use(express.static('dist'))
-app.use(errorHandler)
 
 app.get('/', (request, response) => {
   response.send('<h1>Hello World!</h1>')
@@ -70,7 +72,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if (!body.name) {
@@ -90,10 +92,12 @@ app.post('/api/persons', (request, response) => {
     number: body.number,
   })
 
-  person.save().then(savedPerson => {
-    response.json(savedPerson)
-    console.log(`${process.argv[3]} added to the phonebook!`)
-  })
+  person.save()
+    .then(savedPerson => {
+      response.json(savedPerson)
+      console.log(`${process.argv[3]} added to the phonebook!`)
+    })
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -104,12 +108,14 @@ app.put('/api/persons/:id', (request, response, next) => {
     number: body.number,
   }
 
-  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+  Person.findByIdAndUpdate(request.params.id, person, { new: true, runValidators: true, context: 'query' })
     .then(updatedPerson => {
       response.json(updatedPerson)
     })
     .catch(error => next(error))
 })
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
