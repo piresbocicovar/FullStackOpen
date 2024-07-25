@@ -11,7 +11,7 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  }
   if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }
@@ -19,10 +19,10 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
-morgan.token("data", (request, response) => {
-  const { body } = request;
-  return JSON.stringify(body);
-});
+morgan.token('data', (request) => {
+  const { body } = request
+  return JSON.stringify(body)
+})
 
 app.use(express.json())
 app.use(morgan(':method :url :status :response-time ms - :res[content-length] :data'))
@@ -39,7 +39,7 @@ app.get('/api/persons', (request, response) => {
   })
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then(person => {
       if (person) {
@@ -51,22 +51,22 @@ app.get('/api/persons/:id', (request, response) => {
     .catch(error => next(error))
 })
 
-app.get("/info", (request, response, next) => {
+app.get('/info', (request, response, next) => {
   Person.estimatedDocumentCount({})
     .then((count) => {
       response.send(
-        `<p>Phonebook has info for ${count} people</p>` + 
-        `<p>${new Date()}</p>`);
+        `<p>Phonebook has info for ${count} people</p>` +
+        `<p>${new Date()}</p>`)
     })
     .catch((err) => {
-      console.error(err);
-      next(err);
-    });
-});
+      console.error(err)
+      next(err)
+    })
+})
 
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
@@ -76,14 +76,14 @@ app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if (!body.name) {
-    return response.status(400).json({ 
-      error: 'name missing' 
+    return response.status(400).json({
+      error: 'name missing'
     })
   }
 
   if (!body.number) {
-    return response.status(400).json({ 
-      error: 'number missing' 
+    return response.status(400).json({
+      error: 'number missing'
     })
   }
 
