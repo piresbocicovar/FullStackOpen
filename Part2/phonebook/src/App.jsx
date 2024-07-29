@@ -27,14 +27,14 @@ const App = () => {
   const removePerson = personToRemove => {
     if (window.confirm(`delete ${personToRemove.name}?`)) {
       PersonService.remove(personToRemove.id)
-                   .then(returnedPerson => {
+                   .then(() => {
                       setPersons(persons.filter(person => person !== personToRemove));
                       setMessage({text:`'${personToRemove.name}' was removed from the phonebook`, type: 'success'});
                       setTimeout(() => {
                         setMessage({text:'', type:''})
                       }, 3000);
                     })
-                    .catch(error => {
+                    .catch(() => {
                       setMessage({
                         text: `'${personToRemove.name}' was already removed from the server`,
                         type: 'error'
@@ -78,7 +78,7 @@ const App = () => {
                             setMessage({text:'', type:''})
                           }, 3000);
                         })
-                       .catch(error => {
+                       .catch(() => {
                           setMessage({
                             text: `'${newName}' was already removed from the server`,
                             type: 'error'
