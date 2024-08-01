@@ -8,7 +8,8 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
-const unknownEndpoint = (response) => {
+// eslint-disable-next-line no-unused-vars
+const unknownEndpoint = (request, response, next) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 
