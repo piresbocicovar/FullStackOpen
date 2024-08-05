@@ -59,7 +59,7 @@ describe('Blogs', () => {
     assert(titles.includes('POST test'))
   })
 
-  test('likes are set to 0 if missing from POST request', async () => {
+  test('posted without likes get likes set to 0 by default', async () => {
     const newBlog = {
       title: '0 likes',
       author: 'whatshisface',
@@ -100,6 +100,84 @@ describe('Blogs', () => {
         .expect(400)
         .expect('Content-Type', /application\/json/)
     }
+  })
+})
+
+describe('deletion of a blog', () => {
+  test('succeeds with status code 204 if id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToDelete = blogsAtStart[0]
+
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
+
+    const titles = blogsAtEnd.map(r => r.title)
+    assert(!titles.includes(blogToDelete.title))
+  })
+
+  test('returns status code 204 but doesn\'t delete anything', async () => {
+    const nonExistentId = '640c1e2a69b8e1c7a5562c10'
+
+    await api
+      .delete(`/api/blogs/${nonExistentId}`)
+      .expect(204)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length)
+  })
+})
+
+describe('updating a blog', () => {
+  test('succeeds with status code 200 and updates the blog if id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+
+    const updatedBlog = {
+      title: 'Updated Title',
+      author: 'Updated Author',
+      url: 'updatedurl.com',
+      likes: 10
+    }
+
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const updatedBlogFromResponse = response.body
+
+    assert.deepStrictEqual(updatedBlogFromResponse, {
+      id: blogToUpdate.id,
+      ...updatedBlog
+    })
+
+    const blogsAtEnd = await helper.blogsInDb()
+    const updatedBlogInDb = blogsAtEnd.find(blog => blog.id === blogToUpdate.id)
+    assert.deepStrictEqual(updatedBlogInDb, {
+      id: blogToUpdate.id,
+      ...updatedBlog
+    })
+  })
+
+  test('fails with status code 404 if id does not exist', async () => {
+    const nonExistentId = '640c1e2a69b8e1c7a5562c10'
+    const updatedBlog = {
+      title: 'Updated Title',
+      author: 'Updated Author',
+      url: 'updatedurl.com',
+      likes: 10
+    }
+
+    await api
+      .put(`/api/blogs/${nonExistentId}`)
+      .send(updatedBlog)
+      .expect(404)
   })
 })
 
