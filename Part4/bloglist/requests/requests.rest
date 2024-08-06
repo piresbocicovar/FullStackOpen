@@ -1,4 +1,4 @@
-###get all
+###get all blogs
 GET http://localhost:3001/api/blogs/
 
 ###add NEW person
@@ -10,4 +10,17 @@ Content-Type: application/json
     "author": "Edsger W. Dijkstra",
     "url": "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
     "likes": 5
+}
+
+###get all users
+GET http://localhost:3001/api/users/
+
+###add NEW user
+POST http://localhost:3001/api/users/
+Content-Type: application/json
+
+{
+    "username": "new user",
+    "name": "new",
+    "password": "newpassword"
 }
