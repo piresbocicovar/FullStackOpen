@@ -9,7 +9,8 @@ Content-Type: application/json
     "title": "Go To Statement Considered Harmful",
     "author": "Edsger W. Dijkstra",
     "url": "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
-    "likes": 5
+    "likes": 5,
+    "user": "66b29a8dea67ac1ff2f9c724"
 }
 
 ###get all users
