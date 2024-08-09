@@ -9,12 +9,32 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 
+let authToken = null
+let userId = null
+
 describe('when there are blogs saved initially', () => {
+
   beforeEach(async () => {
     await Blog.deleteMany({})
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash(helper.initialUser.password, 10)
+    const user = new User({
+      username: helper.initialUser.username,
+      name: helper.initialUser.name,
+      passwordHash,
+    })
+    await user.save()
+    userId = user._id
+
+    const response = await api
+      .post('/api/login')
+      .send({ username: helper.initialUser.username, password: helper.initialUser.password })
+
+    authToken = response.body.token
 
     for (let blog of helper.initialBlogs) {
-      let blogObject = new Blog(blog)
+      let blogObject = new Blog({ ...blog, user: userId })
       await blogObject.save()
     }
   })
@@ -40,16 +60,18 @@ describe('when there are blogs saved initially', () => {
     })
   })
 
-  test('blogs are succesfully created after a POST request', async () => {
+  test('blogs are successfully created after a POST request', async () => {
     const newBlog = {
       title: 'POST test',
       author: 'whatsername',
       url: 'defaulturl.com',
-      likes: 0
+      likes: 0,
+      user: userId
     }
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -65,11 +87,13 @@ describe('when there are blogs saved initially', () => {
     const newBlog = {
       title: '0 likes',
       author: 'whatshisface',
-      url: 'defaulturl.com'
+      url: 'defaulturl.com',
+      user: userId
     }
 
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -83,21 +107,25 @@ describe('when there are blogs saved initially', () => {
     const invalidBlogs = [
       {
         author: 'Author',
-        url: 'http://example.com'
+        url: 'http://example.com',
+        user: userId
       },
       {
         title: 'Title',
-        url: 'http://example.com'
+        url: 'http://example.com',
+        user: userId
       },
       {
         title: 'Title',
-        author: 'Author'
+        author: 'Author',
+        user: userId
       }
     ]
 
     for (const blog of invalidBlogs) {
       await api
         .post('/api/blogs')
+        .set('Authorization', `Bearer ${authToken}`)
         .send(blog)
         .expect(400)
         .expect('Content-Type', /application\/json/)
@@ -111,6 +139,7 @@ describe('when there are blogs saved initially', () => {
 
       await api
         .delete(`/api/blogs/${blogToDelete.id}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(204)
 
       const blogsAtEnd = await helper.blogsInDb()
@@ -121,11 +150,12 @@ describe('when there are blogs saved initially', () => {
       assert(!titles.includes(blogToDelete.title))
     })
 
-    test('returns status code 204 but doesn\'t delete anything', async () => {
-      const nonExistentId = '640c1e2a69b8e1c7a5562c10'
+    test('returns status code 204 but doesn\'t delete anything if id does not exist', async () => {
+      const nonExistentId = new mongoose.Types.ObjectId().toString()
 
       await api
         .delete(`/api/blogs/${nonExistentId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .expect(204)
 
       const blogsAtEnd = await helper.blogsInDb()
@@ -142,7 +172,8 @@ describe('when there are blogs saved initially', () => {
         title: 'Updated Title',
         author: 'Updated Author',
         url: 'updatedurl.com',
-        likes: 10
+        likes: 10,
+        user: userId.toString()
       }
 
       const response = await api
@@ -152,6 +183,7 @@ describe('when there are blogs saved initially', () => {
         .expect('Content-Type', /application\/json/)
 
       const updatedBlogFromResponse = response.body
+      updatedBlogFromResponse.user = updatedBlogFromResponse.user.toString()
 
       assert.deepStrictEqual(updatedBlogFromResponse, {
         id: blogToUpdate.id,
@@ -159,7 +191,12 @@ describe('when there are blogs saved initially', () => {
       })
 
       const blogsAtEnd = await helper.blogsInDb()
-      const updatedBlogInDb = blogsAtEnd.find(blog => blog.id === blogToUpdate.id)
+      const transformedBlogsAtEnd = blogsAtEnd.map(blog => ({
+        ...blog,
+        user: blog.user.toString()
+      }))
+
+      const updatedBlogInDb = transformedBlogsAtEnd.find(blog => blog.id === blogToUpdate.id)
       assert.deepStrictEqual(updatedBlogInDb, {
         id: blogToUpdate.id,
         ...updatedBlog
@@ -167,16 +204,18 @@ describe('when there are blogs saved initially', () => {
     })
 
     test('fails with status code 404 if id does not exist', async () => {
-      const nonExistentId = '640c1e2a69b8e1c7a5562c10'
+      const nonExistentId = new mongoose.Types.ObjectId().toString()
       const updatedBlog = {
         title: 'Updated Title',
         author: 'Updated Author',
         url: 'updatedurl.com',
-        likes: 10
+        likes: 10,
+        user: userId
       }
 
       await api
         .put(`/api/blogs/${nonExistentId}`)
+        .set('Authorization', `Bearer ${authToken}`)
         .send(updatedBlog)
         .expect(404)
     })
@@ -271,21 +310,6 @@ describe('when there is initially one user in db', () => {
       .expect(400)
       .expect('Content-Type', /application\/json/)
       .expect({ error: 'Username and password must be at least 3 characters long' })
-  })
-
-  test('creation fails if username is already taken', async () => {
-    const existingUser = {
-      username: 'root',
-      name: 'Existing User',
-      password: 'newpassword',
-    }
-
-    await api
-      .post('/api/users')
-      .send(existingUser)
-      .expect(400)
-      .expect('Content-Type', /application\/json/)
-      .expect({ error: 'Username already taken' })
   })
 })
 

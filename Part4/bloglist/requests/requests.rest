@@ -1,7 +1,7 @@
 ###get all blogs
 GET http://localhost:3001/api/blogs/
 
-###add NEW person
+###add NEW blog
 POST http://localhost:3001/api/blogs/
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5ldyB1c2VyIiwiaWQiOiI2NmI1MTdhYzYwYmMyYjFhNzI2MTgyOTIiLCJpYXQiOjE3MjMxNDQxNTV9.NVw2mAf4G0jSTjN_x-yNmH9UYOxAUwOyL-LZrsqnqUc
@@ -12,6 +12,11 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5ld
     "url": "https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf",
     "likes": 5
 }
+
+###delete a blog
+DELETE http://localhost:3001/api/blogs/66b51827b250c75364c02124
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5ldyB1c2VyIiwiaWQiOiI2NmI1MTdhYzYwYmMyYjFhNzI2MTgyOTIiLCJpYXQiOjE3MjMxNDQxNTV9.NVw2mAf4G0jSTjN_x-yNmH9UYOxAUwOyL-LZrsqnqUc
 
 ###get all users
 GET http://localhost:3001/api/users/
