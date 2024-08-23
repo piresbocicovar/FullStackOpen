@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -12,12 +12,14 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [message, setMessage] = useState({text: '', type: ''})
+  const [message, setMessage] = useState({ text: '', type: '' })
+
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -47,7 +49,7 @@ const App = () => {
         type: 'success'
       })
       setTimeout(() => {
-        setMessage({text: '', type: ''})
+        setMessage({ text: '', type: '' })
       }, 3000)
     } catch (exception) {
       setMessage({
@@ -55,7 +57,7 @@ const App = () => {
         type: 'error'
       })
       setTimeout(() => {
-        setMessage({text: '', type: ''})
+        setMessage({ text: '', type: '' })
       }, 3000)
     }
   }
@@ -63,7 +65,7 @@ const App = () => {
   const handleLogout = async (event) => {
     event.preventDefault()
     try {
-      window.localStorage.removeItem('loggedInBlogappUser') 
+      window.localStorage.removeItem('loggedInBlogappUser')
       blogService.setToken()
       setUser(null)
       setUsername('')
@@ -73,7 +75,7 @@ const App = () => {
         type: 'success'
       })
       setTimeout(() => {
-        setMessage({text: '', type: ''})
+        setMessage({ text: '', type: '' })
       }, 3000)
     } catch (exception) {
       setMessage({
@@ -81,7 +83,7 @@ const App = () => {
         type: 'error'
       })
       setTimeout(() => {
-        setMessage({text: '', type: ''})
+        setMessage({ text: '', type: '' })
       }, 3000)
     }
   }
@@ -89,14 +91,14 @@ const App = () => {
   const handleLike = async (event, blog) => {
     event.preventDefault()
     const {  likes, ...rest } = blog
-    const updatedBlog = {...rest , likes: likes + 1}
+    const updatedBlog = { ...rest , likes: likes + 1 }
     try {
       blogService.update(blog.id, updatedBlog)
       const updatedBlogs = await blogService.getAll()
       setBlogs(updatedBlogs)
-      setMessage({text: `Liked '${blog.title}'`, type: 'success'})
+      setMessage({ text: `Liked '${blog.title}'`, type: 'success' })
       setTimeout(() => {
-        setMessage({text: '', type: ''})
+        setMessage({ text: '', type: '' })
       }, 3000)
     } catch (exception) {
       setMessage({
@@ -104,7 +106,7 @@ const App = () => {
         type: 'error'
       })
       setTimeout(() => {
-        setMessage({text: '', type: ''})
+        setMessage({ text: '', type: '' })
       }, 3000)
     }
   }
@@ -112,12 +114,12 @@ const App = () => {
   const handleDelete = async (event, blog) => {
     event.preventDefault()
     try {
-      blogService.remove(blog.id)
+      await blogService.remove(blog.id)
       const updatedBlogs = await blogService.getAll()
       setBlogs(updatedBlogs)
-      setMessage({text: `Successfully removed '${blog.title}'`, type: 'success'})
+      setMessage({ text: `Successfully removed '${blog.title}'`, type: 'success' })
       setTimeout(() => {
-        setMessage({text: '', type: ''})
+        setMessage({ text: '', type: '' })
       }, 3000)
     } catch (exception) {
       setMessage({
@@ -125,7 +127,7 @@ const App = () => {
         type: 'error'
       })
       setTimeout(() => {
-        setMessage({text: '', type: ''})
+        setMessage({ text: '', type: '' })
       }, 3000)
     }
   }
@@ -140,14 +142,18 @@ const App = () => {
           setUsername={setUsername} handleLogin={handleLogin}/> :
         <div>
           <p>user: {user.name} <button onClick={handleLogout}>logout</button></p>
-          <Togglable buttonLabel={'New Blog'}>
-            <BlogForm/>
+          <Togglable buttonLabel={'New Blog'} ref={blogFormRef}>
+            <BlogForm setBlogs={setBlogs}
+              setMessage={setMessage}
+              blogs={blogs}
+              toggleVisibility={() => blogFormRef.current.toggleVisibility()}
+            />
           </Togglable>
           <h2>blogs</h2>
-            {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-              <Blog key={blog.id} blog={blog} handleLike={handleLike} 
-                handleDelete={handleDelete} username={user.username}/>
-            )}
+          {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
+            <Blog key={blog.id} blog={blog} handleLike={handleLike}
+              handleDelete={handleDelete} username={user.username}/>
+          )}
         </div>
       }
     </div>
