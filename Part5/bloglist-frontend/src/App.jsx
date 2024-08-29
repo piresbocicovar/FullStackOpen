@@ -41,6 +41,8 @@ const App = () => {
       setMessage({ text: 'Login successful', type: 'success' })
       setTimeout(() => setMessage({ text: '', type: '' }), 3000)
     } catch (exception) {
+      setUsername('')
+      setPassword('')
       setMessage({ text: 'Wrong username or password', type: 'error' })
       setTimeout(() => setMessage({ text: '', type: '' }), 3000)
     }
@@ -67,7 +69,7 @@ const App = () => {
     const { likes, ...rest } = blog
     const updatedBlog = { ...rest, likes: likes + 1 }
     try {
-      blogService.update(blog.id, updatedBlog)
+      await blogService.update(blog.id, updatedBlog)
       const updatedBlogs = await blogService.getAll()
       setBlogs(updatedBlogs)
       setMessage({ text: `Liked '${blog.title}'`, type: 'success' })
@@ -80,15 +82,17 @@ const App = () => {
 
   const handleDelete = async (event, blog) => {
     event.preventDefault()
-    try {
-      await blogService.remove(blog.id)
-      const updatedBlogs = await blogService.getAll()
-      setBlogs(updatedBlogs)
-      setMessage({ text: `Successfully removed '${blog.title}'`, type: 'success' })
-      setTimeout(() => setMessage({ text: '', type: '' }), 3000)
-    } catch (exception) {
-      setMessage({ text: `${exception}`, type: 'error' })
-      setTimeout(() => setMessage({ text: '', type: '' }), 3000)
+    if (window.confirm(`delete '${blog.title}'?`)) {
+      try {
+        await blogService.remove(blog.id)
+        const updatedBlogs = await blogService.getAll()
+        setBlogs(updatedBlogs)
+        setMessage({ text: `Successfully removed '${blog.title}'`, type: 'success' })
+        setTimeout(() => setMessage({ text: '', type: '' }), 3000)
+      } catch (exception) {
+        setMessage({ text: `${exception}`, type: 'error' })
+        setTimeout(() => setMessage({ text: '', type: '' }), 3000)
+      }
     }
   }
 
@@ -118,7 +122,7 @@ const App = () => {
           <Togglable buttonLabel={'New Blog'} ref={blogFormRef}>
             <BlogForm onSubmit={handleCreateBlog} />
           </Togglable>
-          <h2>blogs</h2>
+          <h1>blogs</h1>
           {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
             <Blog key={blog.id} blog={blog} handleLike={handleLike}
               handleDelete={handleDelete} username={user.username} />
