@@ -14,10 +14,10 @@ const AnecdoteList = () => {
     )
   })
 
-  const vote = (id) => {
-    console.log('vote', id)
-    dispatch(updateVotes({ id }))
-    dispatch(notify('Anecdote voted!'))
+  const vote = (anecdote) => {
+    console.log('vote', anecdote.content)
+    dispatch(updateVotes(anecdote))
+    dispatch(notify('Anecdote voted!', 2))
   }
 
   const sortedAnecdotes = [...anecdotes].sort((a, b) => b.votes - a.votes)
@@ -32,7 +32,7 @@ const AnecdoteList = () => {
           </div>
           <div>
             has {anecdote.votes}
-            <button onClick={() => vote(anecdote.id)}>vote</button>
+            <button onClick={() => vote(anecdote)}>vote</button>
           </div>
         </div>
       )}

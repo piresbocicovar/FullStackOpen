@@ -1,13 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-export const notify = (message, timeout = 3000) => {
-    return dispatch => {
-      dispatch(setNotification(message))
-      setTimeout(() => {
-        dispatch(clearNotification())
-      }, timeout)
-    }
+export const notify = (message, timeoutInSeconds = 3) => {
+  return dispatch => {
+    dispatch(setNotification(message))
+    const timeout = timeoutInSeconds * 1000
+    setTimeout(() => {
+      dispatch(clearNotification())
+    }, timeout)
   }
+}
 
 const notificationSlice = createSlice({
   name: 'notification',
