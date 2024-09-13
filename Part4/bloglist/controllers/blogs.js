@@ -3,8 +3,7 @@ const Blog = require('../models/blog')
 const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog
-    .find({}).populate('user', { username: 1, name: 1 })
+  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
   response.json(blogs)
 })
 
@@ -17,7 +16,7 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     author: body.author,
     url: body.url,
     likes: body.likes ? body.likes : undefined,
-    user: user.id
+    user: user.id,
   })
 
   const savedBlog = await blog.save()
@@ -26,26 +25,38 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   response.status(201).json(savedBlog)
 })
 
-blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
-  const blog = await Blog.findById(request.params.id)
+blogsRouter.delete(
+  '/:id',
+  middleware.userExtractor,
+  async (request, response) => {
+    const blog = await Blog.findById(request.params.id)
 
-  if (!blog) {
-    return response.status(204).end()
-  }
+    if (!blog) {
+      return response.status(204).end()
+    }
 
-  if (blog.user.toString() !== request.user.id.toString()) {
-    return response.status(403).json({ error: 'forbidden: you do not have permission to delete this blog' })
-  }
+    if (blog.user.toString() !== request.user.id.toString()) {
+      return response
+        .status(403)
+        .json({
+          error: 'forbidden: you do not have permission to delete this blog',
+        })
+    }
 
-  await Blog.findByIdAndDelete(request.params.id)
-  response.status(204).end()
-})
+    await Blog.findByIdAndDelete(request.params.id)
+    response.status(204).end()
+  },
+)
 
 blogsRouter.put('/:id', async (request, response) => {
   const { title, author, url, likes } = request.body
   const blogUpdates = { title, author, url, likes }
 
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blogUpdates, { new: true })
+  const updatedBlog = await Blog.findByIdAndUpdate(
+    request.params.id,
+    blogUpdates,
+    { new: true },
+  )
 
   if (updatedBlog) {
     response.json(updatedBlog)

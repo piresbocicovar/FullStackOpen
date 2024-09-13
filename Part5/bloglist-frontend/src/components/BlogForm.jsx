@@ -1,24 +1,31 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { notify } from '../reducers/notificationReducer'
+import { createBlog } from '../reducers/blogReducer'
 
-const BlogForm = ({ onSubmit }) => {
+const BlogForm = ({ blogFormRef }) => {
   const [newTitle, setNewTitle] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
 
-  const handleSubmit = async (event) => {
+  const dispatch = useDispatch()
+
+  const handleSubmit = (event) => {
     event.preventDefault()
     if (newTitle === '' || newAuthor === '' || newUrl === '') {
       alert('All fields are required')
     } else {
-      const BlogObject = {
+      const blogObject = {
         title: newTitle,
         author: newAuthor,
-        url: newUrl
+        url: newUrl,
       }
-      onSubmit(BlogObject)
+      dispatch(createBlog(blogObject))
+      dispatch(notify(`'${newTitle}' was added to the blog list`, 'success'))
       setNewTitle('')
       setNewAuthor('')
       setNewUrl('')
+      blogFormRef.current.toggleVisibility()
     }
   }
 
@@ -27,24 +34,27 @@ const BlogForm = ({ onSubmit }) => {
       <h2>New Blog</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          title: <input
+          title:
+          <input
             value={newTitle}
             onChange={({ target }) => setNewTitle(target.value)}
-            placeholder="Enter blog title"
+            placeholder='Enter blog title'
           />
         </div>
         <div>
-          author: <input
+          author:
+          <input
             value={newAuthor}
             onChange={({ target }) => setNewAuthor(target.value)}
-            placeholder="Enter author name"
+            placeholder='Enter author name'
           />
         </div>
         <div>
-          url: <input
+          url:
+          <input
             value={newUrl}
             onChange={({ target }) => setNewUrl(target.value)}
-            placeholder="Enter blog URL"
+            placeholder='Enter blog URL'
           />
         </div>
         <div>

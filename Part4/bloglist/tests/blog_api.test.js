@@ -13,7 +13,6 @@ let authToken = null
 let userId = null
 
 describe('when there are blogs saved initially', () => {
-
   beforeEach(async () => {
     await Blog.deleteMany({})
     await User.deleteMany({})
@@ -29,7 +28,10 @@ describe('when there are blogs saved initially', () => {
 
     const response = await api
       .post('/api/login')
-      .send({ username: helper.initialUser.username, password: helper.initialUser.password })
+      .send({
+        username: helper.initialUser.username,
+        password: helper.initialUser.password,
+      })
 
     authToken = response.body.token
 
@@ -54,7 +56,7 @@ describe('when there are blogs saved initially', () => {
 
     const blogs = response.body
 
-    blogs.forEach(blog => {
+    blogs.forEach((blog) => {
       assert(blog.id, 'Blog does not have an id property')
       assert.strictEqual(blog._id, undefined, 'Blog has an _id property')
     })
@@ -66,7 +68,7 @@ describe('when there are blogs saved initially', () => {
       author: 'whatsername',
       url: 'defaulturl.com',
       likes: 0,
-      user: userId
+      user: userId,
     }
 
     await api
@@ -78,7 +80,7 @@ describe('when there are blogs saved initially', () => {
 
     const blogsAtEnd = await helper.blogsInDb()
     assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length + 1)
-    const titles = blogsAtEnd.map(n => n.title)
+    const titles = blogsAtEnd.map((n) => n.title)
 
     assert(titles.includes('POST test'))
   })
@@ -88,7 +90,7 @@ describe('when there are blogs saved initially', () => {
       title: '0 likes',
       author: 'whatshisface',
       url: 'defaulturl.com',
-      user: userId
+      user: userId,
     }
 
     const response = await api
@@ -100,7 +102,11 @@ describe('when there are blogs saved initially', () => {
 
     const createdBlog = response.body
 
-    assert.strictEqual(createdBlog.likes, 0, 'Likes should default to 0 if not provided')
+    assert.strictEqual(
+      createdBlog.likes,
+      0,
+      'Likes should default to 0 if not provided',
+    )
   })
 
   test('blogs cannot be posted without title/author/url', async () => {
@@ -108,18 +114,18 @@ describe('when there are blogs saved initially', () => {
       {
         author: 'Author',
         url: 'http://example.com',
-        user: userId
+        user: userId,
       },
       {
         title: 'Title',
         url: 'http://example.com',
-        user: userId
+        user: userId,
       },
       {
         title: 'Title',
         author: 'Author',
-        user: userId
-      }
+        user: userId,
+      },
     ]
 
     for (const blog of invalidBlogs) {
@@ -146,7 +152,7 @@ describe('when there are blogs saved initially', () => {
 
       assert.strictEqual(blogsAtEnd.length, helper.initialBlogs.length - 1)
 
-      const titles = blogsAtEnd.map(r => r.title)
+      const titles = blogsAtEnd.map((r) => r.title)
       assert(!titles.includes(blogToDelete.title))
     })
 
@@ -173,7 +179,7 @@ describe('when there are blogs saved initially', () => {
         author: 'Updated Author',
         url: 'updatedurl.com',
         likes: 10,
-        user: userId.toString()
+        user: userId.toString(),
       }
 
       const response = await api
@@ -187,19 +193,21 @@ describe('when there are blogs saved initially', () => {
 
       assert.deepStrictEqual(updatedBlogFromResponse, {
         id: blogToUpdate.id,
-        ...updatedBlog
+        ...updatedBlog,
       })
 
       const blogsAtEnd = await helper.blogsInDb()
-      const transformedBlogsAtEnd = blogsAtEnd.map(blog => ({
+      const transformedBlogsAtEnd = blogsAtEnd.map((blog) => ({
         ...blog,
-        user: blog.user.toString()
+        user: blog.user.toString(),
       }))
 
-      const updatedBlogInDb = transformedBlogsAtEnd.find(blog => blog.id === blogToUpdate.id)
+      const updatedBlogInDb = transformedBlogsAtEnd.find(
+        (blog) => blog.id === blogToUpdate.id,
+      )
       assert.deepStrictEqual(updatedBlogInDb, {
         id: blogToUpdate.id,
-        ...updatedBlog
+        ...updatedBlog,
       })
     })
 
@@ -210,7 +218,7 @@ describe('when there are blogs saved initially', () => {
         author: 'Updated Author',
         url: 'updatedurl.com',
         likes: 10,
-        user: userId
+        user: userId,
       }
 
       await api
@@ -250,7 +258,7 @@ describe('when there is initially one user in db', () => {
     const usersAtEnd = await helper.usersInDb()
     assert.strictEqual(usersAtEnd.length, usersAtStart.length + 1)
 
-    const usernames = usersAtEnd.map(u => u.username)
+    const usernames = usersAtEnd.map((u) => u.username)
     assert(usernames.includes(newUser.username))
   })
 
@@ -294,7 +302,9 @@ describe('when there is initially one user in db', () => {
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)
-      .expect({ error: 'Username and password must be at least 3 characters long' })
+      .expect({
+        error: 'Username and password must be at least 3 characters long',
+      })
   })
 
   test('creation fails if password is too short', async () => {
@@ -309,7 +319,9 @@ describe('when there is initially one user in db', () => {
       .send(newUser)
       .expect(400)
       .expect('Content-Type', /application\/json/)
-      .expect({ error: 'Username and password must be at least 3 characters long' })
+      .expect({
+        error: 'Username and password must be at least 3 characters long',
+      })
   })
 })
 

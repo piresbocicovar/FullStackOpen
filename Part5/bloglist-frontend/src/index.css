@@ -1,19 +1,19 @@
-.successMessage{
-    color: rgb(0, 151, 33);
-    background: rgba(211, 211, 211, 0.815);
-    font-size: 20px;
-    border-style: solid;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
+.successMessage {
+  color: rgb(0, 151, 33);
+  background: rgba(211, 211, 211, 0.815);
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
-.errorMessage{
-    color: rgb(151, 0, 0);
-    background: rgba(211, 211, 211, 0.815);
-    font-size: 20px;
-    border-style: solid;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
+.errorMessage {
+  color: rgb(151, 0, 0);
+  background: rgba(211, 211, 211, 0.815);
+  font-size: 20px;
+  border-style: solid;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
 }

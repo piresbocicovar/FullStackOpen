@@ -9,7 +9,7 @@ const blogList = [
     author: 'Michael Chan',
     url: 'https://reactpatterns.com/',
     likes: 7,
-    __v: 0
+    __v: 0,
   },
   {
     _id: '5a422aa71b54a676234d17f8',
@@ -17,7 +17,7 @@ const blogList = [
     author: 'Edsger W. Dijkstra',
     url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
     likes: 5,
-    __v: 0
+    __v: 0,
   },
   {
     _id: '5a422b3a1b54a676234d17f9',
@@ -25,7 +25,7 @@ const blogList = [
     author: 'Edsger W. Dijkstra',
     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
     likes: 12,
-    __v: 0
+    __v: 0,
   },
   {
     _id: '5a422b891b54a676234d17fa',
@@ -33,7 +33,7 @@ const blogList = [
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
     likes: 10,
-    __v: 0
+    __v: 0,
   },
   {
     _id: '5a422ba71b54a676234d17fb',
@@ -41,7 +41,7 @@ const blogList = [
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
     likes: 0,
-    __v: 0
+    __v: 0,
   },
   {
     _id: '5a422bc61b54a676234d17fc',
@@ -49,8 +49,8 @@ const blogList = [
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
     likes: 2,
-    __v: 0
-  }
+    __v: 0,
+  },
 ]
 
 test('dummy function returns one', () => {
@@ -70,7 +70,7 @@ describe('favorite blog', () => {
     assert.deepStrictEqual(result, {
       author: blogList[1].author,
       likes: blogList[1].likes,
-      title: blogList[1].title
+      title: blogList[1].title,
     })
   })
 
@@ -79,7 +79,7 @@ describe('favorite blog', () => {
     assert.deepStrictEqual(result, {
       author: blogList[2].author,
       likes: blogList[2].likes,
-      title: blogList[2].title
+      title: blogList[2].title,
     })
   })
 })
@@ -94,7 +94,7 @@ describe('most blogs', () => {
     const result = listHelper.mostBlogs([blogList[1]])
     assert.deepStrictEqual(result, {
       author: 'Edsger W. Dijkstra',
-      blogs: 1
+      blogs: 1,
     })
   })
 
@@ -102,7 +102,7 @@ describe('most blogs', () => {
     const result = listHelper.mostBlogs(blogList)
     assert.deepStrictEqual(result, {
       author: 'Robert C. Martin',
-      blogs: 3
+      blogs: 3,
     })
   })
 })
@@ -134,7 +134,7 @@ describe('most likes', () => {
     const result = listHelper.mostLikes([blogList[1]])
     assert.deepStrictEqual(result, {
       author: 'Edsger W. Dijkstra',
-      likes: 5
+      likes: 5,
     })
   })
 
@@ -142,7 +142,7 @@ describe('most likes', () => {
     const result = listHelper.mostLikes(blogList)
     assert.deepStrictEqual(result, {
       author: 'Edsger W. Dijkstra',
-      likes: 17
+      likes: 17,
     })
   })
 })
