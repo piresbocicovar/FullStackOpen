@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import loginService from '../services/login'
 import { notify } from '../reducers/notificationReducer'
 import { useDispatch } from 'react-redux'
+import { setUser } from '../reducers/userReducer'
 import blogService from '../services/blogs'
 
-const LoginForm = ({ setUser }) => {
+const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -15,7 +16,7 @@ const LoginForm = ({ setUser }) => {
     try {
       const user = await loginService.login({ username, password })
       window.localStorage.setItem('loggedInBlogappUser', JSON.stringify(user))
-      setUser(user)
+      dispatch(setUser(user))
       blogService.setToken(user.token)
       setUsername('')
       setPassword('')

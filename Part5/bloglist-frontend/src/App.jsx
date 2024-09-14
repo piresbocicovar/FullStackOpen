@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -8,9 +8,10 @@ import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import { notify } from './reducers/notificationReducer'
 import { initializeBlogs } from './reducers/blogReducer'
+import { setUser, clearUser } from './reducers/userReducer'
 
 const App = () => {
-  const [user, setUser] = useState(null)
+  const user = useSelector(state => state.user)
   const blogs = useSelector(state => state.blogs)
   const dispatch = useDispatch()
   const blogFormRef = useRef()
@@ -23,17 +24,17 @@ const App = () => {
     const loggedInUserJSON = window.localStorage.getItem('loggedInBlogappUser')
     if (loggedInUserJSON) {
       const user = JSON.parse(loggedInUserJSON)
-      setUser(user)
+      dispatch(setUser(user))
       blogService.setToken(user.token)
     }
-  }, [])
+  }, [dispatch])
 
   const handleLogout = async (event) => {
     event.preventDefault()
     try {
       window.localStorage.removeItem('loggedInBlogappUser')
       blogService.setToken()
-      setUser(null)
+      dispatch(clearUser())
       dispatch(notify('Logout successful', 'success'))
     } catch (exception) {
       dispatch(notify(`${exception}`, 'error'))
@@ -45,7 +46,7 @@ const App = () => {
       <Notification />
 
       {user === null ? (
-        <LoginForm setUser={setUser} />
+        <LoginForm />
       ) : (
         <div>
           <p>
