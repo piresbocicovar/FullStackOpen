@@ -1,0 +1,22 @@
+.blog-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; 
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-right: 0.5rem;
+}
+
+.form-group input {
+  font-size: 0.875rem;
+  padding: 0.4rem; 
+}
+
+.form-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}

@@ -1,0 +1,63 @@
+.comments-container {
+  margin-top: 2rem;
+}
+
+.comments-header {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.blog-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; 
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-right: 0.5rem;
+}
+
+.comments-form-control {
+min-width: 70vw;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.comments-list-container {
+  flex: 1;
+  border: 2px solid #007bff;
+  border-radius: 0.5rem; 
+  overflow-y: auto; 
+  background-color: #f8f9fa; 
+  margin-top: 1rem; 
+  height: 31vh;
+}
+
+.comments-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.comment-item {
+  padding: 0.7rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.comment-item p {
+  margin-bottom: 0;
+}
+
+.comment-item:nth-child(even) {
+  background-color: #f1f1f1;
+}
+
+.comment-item:nth-child(odd) {
+  background-color: #fff;
+}
+

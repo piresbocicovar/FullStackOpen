@@ -1,7 +1,9 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react'
 import PropTypes from 'prop-types'
+import { Button } from 'react-bootstrap'
+import './Togglable.css'
 
-const Togglable = React.forwardRef((props, refs) => {
+const Togglable = forwardRef((props, ref) => {
   const [visible, setVisible] = useState(false)
 
   const hideWhenVisible = { display: visible ? 'none' : '' }
@@ -11,20 +13,22 @@ const Togglable = React.forwardRef((props, refs) => {
     setVisible(!visible)
   }
 
-  useImperativeHandle(refs, () => {
-    return {
-      toggleVisibility,
-    }
-  })
+  useImperativeHandle(ref, () => ({
+    toggleVisibility,
+  }))
 
   return (
-    <div>
+    <div className="togglable-container">
       <div style={hideWhenVisible}>
-        <button onClick={toggleVisibility}>{props.buttonLabel}</button>
+        <Button className="togglable-button" onClick={toggleVisibility}>
+          {props.buttonLabel}
+        </Button>
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className="togglable-content">
         {props.children}
-        <button onClick={toggleVisibility}>cancel</button>
+        <Button className="cancel-button" onClick={toggleVisibility}>
+          Cancel
+        </Button>
       </div>
     </div>
   )

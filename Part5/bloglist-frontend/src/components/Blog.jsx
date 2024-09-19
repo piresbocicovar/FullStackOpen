@@ -1,14 +1,29 @@
-import { useState } from 'react'
-import './Blog.css'
-import { useDispatch } from 'react-redux'
-import { notify } from '../reducers/notificationReducer'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useParams } from 'react-router-dom'
 import { initializeBlogs, updateLikes, deleteBlog } from '../reducers/blogReducer'
+import { notify } from '../reducers/notificationReducer'
+import { Link } from 'react-router-dom'
+import { Button } from 'react-bootstrap'
+import Comments from './Comments'
+import './blog.css'
 
-const Blog = ({ blog, username }) => {
-  const [showInfo, setShowInfo] = useState(false)
+const Blog = () => {
   const dispatch = useDispatch()
+  const { id } = useParams()
+  const blogs = useSelector(state => state.blogs)
+  const user = useSelector(state => state.user)
+  const blog = blogs.find(blog => blog.id === id)
 
-  const toggleInfo = () => setShowInfo(prev => !prev)
+  useEffect(() => {
+    if (blogs.length === 0) {
+      dispatch(initializeBlogs())
+    }
+  }, [dispatch, blogs.length])
+
+  if (!blog) {
+    return <p>Loading blog...</p>
+  }
 
   const handleLike = async (event) => {
     event.preventDefault()
@@ -23,10 +38,9 @@ const Blog = ({ blog, username }) => {
 
   const handleDelete = async (event) => {
     event.preventDefault()
-    if (window.confirm(`delete '${blog.title}'?`)) {
+    if (window.confirm(`Delete '${blog.title}'?`)) {
       try {
         dispatch(deleteBlog(blog.id))
-        dispatch(initializeBlogs())
         dispatch(notify(`Successfully removed '${blog.title}'`, 'success'))
       } catch (exception) {
         dispatch(notify(`${exception}`, 'error'))
@@ -35,49 +49,36 @@ const Blog = ({ blog, username }) => {
   }
 
   return (
-    <div className="blog">
-      {showInfo ? (
-        <>
-          <h2 className="blog-title">{blog.title}</h2>
-          <button className="toggle-button" onClick={toggleInfo}>
-            Hide
-          </button>
-          <p>
-            <strong>Author:</strong> {blog.author}
-          </p>
-          <p>
-            <strong>Likes:</strong> {blog.likes}
-          </p>
-          <p>
-            <strong>URL:</strong> {blog.url}
-          </p>
-          <p>
-            <strong>Posted by:</strong> {blog.user ? blog.user.name : ''}
-          </p>
-          <button
+    <div className='blog-container'>
+      <div className='blog-header'>
+        <h1 className='blog-title'>Blog {blog.title}</h1>
+        {blog.user && user.username === blog.user.username && (
+          <Button
+            variant='danger'
             className="action-button"
-            onClick={handleLike}
+            onClick={handleDelete}
           >
-            Like
-          </button>
-          {blog.user && username === blog.user.username && (
-            <button
-              className="action-button"
-              onClick={handleDelete}
-            >
-              Delete
-            </button>
-          )}
-        </>
-      ) : (
-        <>
-          <h2 className="blog-title">{blog.title}</h2>
-          <p>by {blog.author}</p>
-          <button className="toggle-button" onClick={toggleInfo}>
-            View
-          </button>
-        </>
-      )}
+          Delete blog
+          </Button>
+        )}
+      </div>
+      <a className='blog-url' href={`https://${blog.url}`} target="_blank" rel="noopener noreferrer">
+        {blog.url}
+      </a>
+      <div className="blog-meta">
+        <p><strong>Author:</strong> {blog.author}</p>
+        <p><strong>Posted by: </strong><Link to={`/users/${blog.user.id}`}>{blog.user.name}</Link></p>
+      </div>
+      <div className="like-meta">
+        <Button
+          className="action-button"
+          onClick={handleLike}
+        >
+    Like
+        </Button>
+        <p><strong>Likes:</strong> {blog.likes}</p>
+      </div>
+      <Comments blogId={blog.id} />
     </div>
   )
 }

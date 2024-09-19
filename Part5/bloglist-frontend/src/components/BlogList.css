@@ -1,0 +1,12 @@
+.blog-title {
+  font-size: 1.5rem; 
+  margin: 0; 
+}
+
+.blog-title a {
+  text-decoration: none; 
+}
+
+.blog-title a:hover {
+  text-decoration: underline; 
+}

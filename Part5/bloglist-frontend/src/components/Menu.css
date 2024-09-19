@@ -1,0 +1,27 @@
+.navbar-custom {
+  padding: 0; 
+}
+
+.nav-link-custom {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center; 
+  height: 100%; 
+}
+
+.nav-link-custom:hover {
+  background-color: #0056b3;
+  color: #fff;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s; 
+}
+
+.navbar-text-custom {
+  margin-right: 1rem;
+  border-right: 1px solid #fff;
+  padding-right: 1rem;
+  line-height: 2rem;
+}
+

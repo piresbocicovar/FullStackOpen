@@ -65,4 +65,34 @@ blogsRouter.put('/:id', async (request, response) => {
   }
 })
 
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const { id } = request.params
+  const { content } = request.body
+
+  const blog = await Blog.findById(id)
+  if (!blog) {
+    return response.status(404).json({ error: 'Blog not found' })
+  }
+
+  const newComment = {
+    content,
+  }
+
+  blog.comments = blog.comments.concat(newComment)
+  await blog.save()
+
+  response.status(201).json(newComment)
+})
+
+blogsRouter.get('/:id/comments', async (request, response) => {
+  const { id } = request.params
+
+  const blog = await Blog.findById(id)
+  if (!blog) {
+    return response.status(404).json({ error: 'Blog not found' })
+  }
+
+  response.json(blog.comments)
+})
+
 module.exports = blogsRouter

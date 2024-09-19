@@ -1,0 +1,42 @@
+.blog-list-view {
+  display: flex;
+  flex-direction: column;
+  height: 88vh; 
+  margin: 0 1rem; 
+  padding-top: 1rem; 
+  box-sizing: border-box;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.header-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.blog-list-container {
+  flex: 1;
+  border: 2px solid #007bff;
+  border-radius: 0.5rem;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+}
+
+.blog {
+  padding: 0.7rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.blog:nth-child(even) {
+  background-color: #f1f1f1;
+}
+
+.blog:nth-child(odd) {
+  background-color: #fff;
+}
